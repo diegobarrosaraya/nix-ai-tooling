@@ -48,6 +48,16 @@ in
       '';
     };
 
+    bundledSkills = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Also merge the skills shipped in this repo's `skills/` directory
+        (doc-capture, screenshot-annotate). They sit after vaultSkillsDir, so a
+        vault skill with the same name wins.
+      '';
+    };
+
     stagingDir = lib.mkOption {
       type = lib.types.str;
       default = "${config.home.homeDirectory}/.local/share/ai-skills/merged";
@@ -97,7 +107,7 @@ in
       STAGING="${cfg.stagingDir}"
 
       # Ordered source list: vault first (wins on collisions), then extras.
-      SOURCES=("$VAULT" ${lib.concatMapStringsSep " " (s: ''"${s}"'') cfg.extraSkillSources})
+      SOURCES=("$VAULT" ${lib.concatMapStringsSep " " (s: ''"${s}"'') cfg.extraSkillSources} ${lib.optionalString cfg.bundledSkills ''"${../skills}"''})
 
       # Build a fresh merged staging dir of per-skill symlinks. Vault takes
       # precedence: a skill name is only linked from the first source that has it.
