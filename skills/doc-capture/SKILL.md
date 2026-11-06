@@ -12,7 +12,13 @@ Turns a list of steps into a guide with annotated screenshots. The list is a fil
 1. The user named the site, and it is a sandbox or test site. Never a production or customer site.
 2. You use `mcp__playwright-sandbox__*` tools, not `mcp__playwright__*`. The sandbox server keeps no logins.
 3. You sign in only with a test account. Do not use SSO or real credentials. If a page asks for them, stop and tell the user.
-4. Every URL you open has the host the user named. Do not follow links to other hosts.
+4. Every URL you open has the host the user named, plus the hosts of the app inside that site (for a Forge app: `atlassian-dev.net` and the vendor's own host). Do not follow links to any other host.
+5. Never print or save the page URL of an embedded app. It can carry session tokens. Read only the part before `?` or `#`.
+6. Blur the signed-in user's name, email and avatar in every screenshot, and check the image. Do the same for assignee and leader columns.
+
+## Browser size
+
+Always capture at 1920x1080 (1080p). The `playwright-sandbox` server starts with that viewport. Before the first screenshot, check the size. If it is different, run `browser_resize` to 1920x1080. Do not resize in the middle of a guide, because boxes and layouts change between sizes.
 
 ## Step 1: write `steps.json`
 

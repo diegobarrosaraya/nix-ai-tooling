@@ -13,11 +13,14 @@
     if (t instanceof Element) return t;
     if (typeof t === "string") return document.querySelector(t);
     if (t && t.text) {
-      // Deepest element whose own text equals the wanted text.
+      // Deepest visible element whose text equals the wanted text (or starts with it, for truncated labels).
+      // getClientRects, not offsetParent: offsetParent is null for SVG and fixed elements.
       const want = t.text.trim().toLowerCase();
-      const all = [...document.querySelectorAll("body *")].filter(
-        (e) => e.offsetParent !== null && e.textContent.trim().toLowerCase() === want
-      );
+      const all = [...document.querySelectorAll("body *")].filter((e) => {
+        if (e.getClientRects().length === 0) return false;
+        const s = e.textContent.trim().toLowerCase();
+        return t.startsWith ? s.startsWith(want) : s === want;
+      });
       return all.sort((a, b) => a.querySelectorAll("*").length - b.querySelectorAll("*").length)[0] || null;
     }
     return null;
@@ -40,7 +43,12 @@
   const el = (t) => {
     const e = resolve(t);
     if (!e) throw new Error("annotate: target not found: " + JSON.stringify(t));
-    e.scrollIntoView({ block: "center", inline: "center" });
+    // Scroll only when the target is out of view. A scroll on every call moved the page
+    // under boxes that were already drawn (seen on a horizontally scrolling Gantt).
+    const r = e.getBoundingClientRect();
+    if (r.top < 0 || r.left < 0 || r.bottom > innerHeight || r.right > innerWidth) {
+      e.scrollIntoView({ block: "center", inline: "center" });
+    }
     return e;
   };
 

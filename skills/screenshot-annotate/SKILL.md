@@ -53,5 +53,8 @@ Example:
 ## Limits
 
 - The overlay is fixed to the view. Use viewport screenshots only, not `fullPage`.
-- A `{text}` target must match the full visible text of one element. If it fails, use a CSS selector.
-- Text in an iframe is out of reach. Annotate the iframe element itself.
+- A `{text}` target must match the full visible text of one element. For a truncated label, use `{text: "Run data", startsWith: true}`. If it still fails, use a CSS selector or pass an element.
+- `window.__ann` exists in every frame, but each frame has its own copy. Run the calls inside the frame that holds the target. With `browser_evaluate`, set `target` to `iframe >> internal:control=enter-frame >> body` (repeat the `iframe >> internal:control=enter-frame >>` part once per level). With `browser_run_code_unsafe`, pick the frame from `page.frames()`. Match a frame by the start of its URL, because the main page URL can contain the app host in its query string.
+- The overlay scrolls a target into view only when it is off screen. Scroll the page first, then draw all annotations, so nothing moves under a box you already drew.
+- Move the mouse to a blank area before the screenshot. A hovered row or tooltip shows up in the image.
+- Use `pad: 8` for text-only targets, so the box border does not cover the first letter.
