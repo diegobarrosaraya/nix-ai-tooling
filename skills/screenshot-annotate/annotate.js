@@ -24,13 +24,17 @@
   };
 
   const ensureLayer = () => {
-    if (layer && layer.isConnected) return layer;
-    layer = document.createElement("div");
-    layer.id = "__ann-layer";
+    if (layer && layer.isConnected) return layer.shadowRoot;
+    // Custom tag plus inline !important: page rules such as `div{opacity:.5}` must not hit the host.
+    layer = document.createElement("ann-layer");
     layer.style.cssText =
-      "position:fixed;inset:0;pointer-events:none;z-index:2147483647;font-family:system-ui,sans-serif";
+      "all:initial!important;display:block!important;position:fixed!important;inset:0!important;" +
+      "pointer-events:none!important;z-index:2147483647!important;opacity:1!important;" +
+      "font-family:system-ui,sans-serif!important";
+    // Shadow root: page CSS such as `svg{opacity:.5}` must not reach the annotations.
+    layer.attachShadow({ mode: "open" });
     document.documentElement.appendChild(layer);
-    return layer;
+    return layer.shadowRoot;
   };
 
   const el = (t) => {

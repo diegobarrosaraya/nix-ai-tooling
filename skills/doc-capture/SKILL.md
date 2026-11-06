@@ -43,7 +43,7 @@ For each step, in order:
 
 1. Run `do`.
 2. Run the `blur` and `annotate` calls with `browser_evaluate`. See the `screenshot-annotate` skill for the API.
-3. Run `browser_take_screenshot` with `filename` set to `<id>.png`. Look at the image.
+3. Run `browser_take_screenshot` with `filename` set to `<id>.png`. Look at the image. The server refuses paths outside the working directory, so use a relative filename or a path inside it. Move the files to the guide folder afterward.
 4. Run `__ann.clear()`.
 
 If a step fails, fix `steps.json` and run only that step again.
